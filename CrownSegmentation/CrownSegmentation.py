@@ -769,7 +769,7 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
 
   def process(self):
     parameters = {}
-    parameters ["input"] = self.input
+    parameters ["input"] = os.path.basename(self.input)
     parameters ["output"] = self.output
     parameters ["subdivision_level"] = self.rotation
     parameters ['resolution'] = self.resolution
@@ -778,6 +778,9 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
     parameters ['sepOutputs'] = int(self.sepOutputs)
     parameters ['chooseFDI'] = int(self.chooseFDI)
     parameters ['logPath'] = self.logPath
+    parameters ['mount_point'] = os.path.dirname(self.input)
+    parameters ['overwrite'] = True
+    parameters ['name_env'] = "shapeAxi"
     print ('parameters : ', parameters)
     flybyProcess = slicer.modules.crownsegmentationcli
     self.cliNode = slicer.cli.run(flybyProcess,None, parameters)    

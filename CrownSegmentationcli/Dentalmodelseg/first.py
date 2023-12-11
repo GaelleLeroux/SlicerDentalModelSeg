@@ -1,14 +1,16 @@
-#!/usr/bin/env python-real
+'''
+This file is running on the python of slicer. It's checking the installation of miniconda and install it if not.
+'''
 
-from slicer.util import pip_install
-import argparse
-import sys
-import os
-import numpy as np
-import platform
-import urllib
+
 import subprocess
+import platform
+import os
+import sys
+import urllib.request
 import shutil
+import argparse
+
 
 
 def checkMiniconda():
@@ -112,11 +114,6 @@ def run(args):
     '''
     main function. It will check if miniconda is installed and call second.py on the python of miniconda3
     '''
-    print('strat crown segmentation')
-    print(f' args {args}')
-
-
-
     system = platform.system()
     miniconda,default_install_path = checkMiniconda()
     
@@ -131,26 +128,22 @@ def run(args):
         
     current_file_path = os.path.abspath(__file__)
     current_directory = os.path.dirname(current_file_path)
-    path_func_miniconda = os.path.join(current_directory,"Dentalmodelseg",'second.py') #Next files to call
+    path_func_miniconda = os.path.join(current_directory,'second.py') #Next files to call
 
     parameters = {}
     parameters ["input"] = args.input
     parameters ["output"] = args.output
-    parameters ["subdivision_level"] = args.subdivision_level
+    parameters ["subdivision_level"] = args.rotation
     parameters ['resolution'] = args.resolution
     parameters ['model'] = args.model
     parameters ['predictedId'] = args.predictedId
     parameters ['sepOutputs'] = int(args.sepOutputs)
     parameters ['chooseFDI'] = int(args.chooseFDI)
     parameters ['logPath'] = args.logPath
-    parameters ['mount_point'] = args.mount_point
     parameters ['overwrite'] = args.overwrite
-    parameters ['name_env'] = args.name_env
-    
+    parameters ['mount_point'] = args.mount_point
 
-    command_to_execute = [python_path,path_func_miniconda]+ [f"{v}" for k, v in parameters.items()]  
-
-    print("command to execute : ",command_to_execute)
+    command_to_execute = [python_path,path_func_miniconda]+ [f"--{k}={v}" for k, v in parameters.items()]  
 
     env = dict(os.environ)
     if 'PYTHONPATH' in env:
@@ -171,15 +164,25 @@ def run(args):
         print(result.stdout)
         print("Environment created successfully.")
 
-  
 
 
+if __name__ == "__main__":
+    # args = {
+    # "file": sys.argv[1],
+    # "out": sys.argv[2],
+    # "overwrite": sys.argv[3],
+    # "mount_point": sys.argv[4],
+    # "name_env":sys.argv[5],
+    # "resolution":sys.argv[6],
+    # "predictedId":sys.argv[7]
+    
+    # }
 
-
-if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('input',type=str)
     parser.add_argument('output',type=str)
+    parser.add_argument('mount_point',type=str)
+    parser.add_argument('overwrite',type=bool)
     parser.add_argument('subdivision_level',type = int)
     parser.add_argument('resolution',type=int)
     parser.add_argument('model',type=str)
@@ -187,10 +190,6 @@ if __name__ == '__main__':
     parser.add_argument('sepOutputs',type=int)
     parser.add_argument('chooseFDI',type=int)
     parser.add_argument('logPath',type=str)
-    parser.add_argument('mount_point',type=str)
-    parser.add_argument('overwrite',type=bool)
-    parser.add_argument("name_env",type=str)
 
     args = parser.parse_args()
     run(args)
-

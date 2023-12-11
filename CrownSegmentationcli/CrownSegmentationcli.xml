@@ -81,5 +81,26 @@
       <description>Path to write log to</description>
     </string>
 
+    <string>
+      <name>mount_point</name>
+      <label>mount_point</label>
+      <index>9</index>
+      <description>Path to files</description>
+    </string>
+
+    <string>
+      <name>overwrite</name>
+      <label>overwrite</label>
+      <index>10</index>
+      <description>overwrite or not the files</description>
+    </string>
+
+    <string>
+      <name>name_env</name>
+      <label>name_env</label>
+      <index>11</index>
+      <description>name_env to run on miniconda</description>
+    </string>
+
   </parameters>
 </executable>
