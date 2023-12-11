@@ -24,12 +24,26 @@ if system !="WSL" :
     from __CrownSegmentation.utils import PolyDataToTensors, CreateIcosahedron
 
     import monai
-    from pytorch3d.renderer import (
-            FoVPerspectiveCameras, look_at_rotation, 
-            RasterizationSettings, MeshRenderer, MeshRasterizer, HardPhongShader, AmbientLights,  TexturesVertex, 
-    )
-    from pytorch3d.structures import Meshes
+    try : 
+        from pytorch3d.renderer import (
+                FoVPerspectiveCameras, look_at_rotation, 
+                RasterizationSettings, MeshRenderer, MeshRasterizer, HardPhongShader, AmbientLights,  TexturesVertex, 
+        )
+        from pytorch3d.structures import Meshes
+    except ImportError : 
+        try:
+            code_path = '/'.join(os.path.dirname(os.path.abspath(__file__)).split('/'))
+            print(code_path)
+            pip_install(f'{code_path}/_CrownSegmentationcli/pytorch3d-0.7.0-cp39-cp39-linux_x86_64.whl') # py39_cu113_pyt1120
+        except:
+            pip_install('--force-reinstall --no-deps --no-index --no-cache-dir pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py39_cu113_pyt1120/download.html')
 
+        from pytorch3d.renderer import (
+                FoVPerspectiveCameras, look_at_rotation, 
+                RasterizationSettings, MeshRenderer, MeshRasterizer, HardPhongShader, AmbientLights,  TexturesVertex, 
+        )
+        from pytorch3d.structures import Meshes
+   
     try : 
         import pytorch_lightning as pl
     except ImportError : 

@@ -75,8 +75,8 @@ if system !="Windows" :
 
     try:
       import pytorch3d
-      if pytorch3d.__version__ != '0.7.0':
-        raise ImportError
+      # if pytorch3d.__version__ != '0.7.0':
+      #   raise ImportError
     except ImportError:
       InstallDependencies()
       
