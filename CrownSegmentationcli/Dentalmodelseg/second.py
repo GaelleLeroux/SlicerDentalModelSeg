@@ -274,60 +274,81 @@ def run(args):
     main function, checking if the environnement is created and running shapeaxi on the environnement
     '''
     print(args)
-    # system = platform.system()
-    # if system=="Windows":
-    #     minicondawsl, default_install_path = checkMinicondaWsl()
-    #     if not minicondawsl :
-    #         install_miniconda_on_wsl()
-    #         print("ON INSTALL MINICONDA SUR WSL")
+    system = platform.system()
+    if system=="Windows":
+        minicondawsl, default_install_path = checkMinicondaWsl()
+        if not minicondawsl :
+            install_miniconda_on_wsl()
+            print("ON INSTALL MINICONDA SUR WSL")
             
-    #     env_exist_wsl = checkEnvCondaWsl(args['name_env'])
-    #     if not env_exist_wsl :
-    #         createCondaEnvWsl(args['name_env'])
+        env_exist_wsl = checkEnvCondaWsl(args.name_env)
+        if not env_exist_wsl :
+            createCondaEnvWsl(args.name_env)
             
-    #     checkUpgradeWsl(args['name_env'])
+        checkUpgradeWsl(args.name_env)
         
-    #     name = args['name_env']
-    #     file = args['file']
-    #     out = windows_to_linux_path(args['file'])
-    #     mount_point = windows_to_linux_path(args['mount_point'])
-    #     overwrite = args['overwrite']
-    #     path_activate = f"~/miniconda3/bin/activate"
-    #     command = f"wsl -- bash -c \"source {path_activate} {name} && dentalmodelseg --vtk {file} --out {out} --mount_point {mount_point} --overwrite {overwrite}\""
-    #     print("command : ",command)
-    #     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
-    #     if result.returncode == 0:
-    #         print(f"Successfully first command executed : {command}")
-    #         print(result.stdout)
-    #     else:
-    #         print(f"Failed to execute first command : {command}")
-    #         print(result.stderr)
+        name = args.name_env
+        out = windows_to_linux_path(args.input)
+        mount_point = windows_to_linux_path(args.mount_point)
+        model = args.model
+        if model == "latest":
+            model = None
+        else : 
+            model = windows_to_linux_path(model)
+
+        path_activate = f"~/miniconda3/bin/activate"
+        command = f"wsl -- bash -c \"source {path_activate} {name} && dentalmodelseg --vtk {args.input} --stl {args.input_stl} --csv {args.input_csv} --out {out} --overwrite {args.overwrite} --model {model} --crown_segmentation {args.sepOutputs} --array_name {args.predictedId} --fdi{args.chooseFDI} --suffix {args.suffix}\""
+        print("command : ",command)
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
+        if result.returncode == 0:
+            print(f"Successfully first command executed : {command}")
+            print(result.stdout)
+        else:
+            print(f"Failed to execute first command : {command}")
+            print(result.stderr)
         
         
             
-    # else : 
-    #     user_home = os.path.expanduser("~")
-    #     default_install_path = os.path.join(user_home, "miniconda3")
-    #     path_activate = f"~/miniconda3/bin/activate"
+    else : 
+        user_home = os.path.expanduser("~")
+        default_install_path = os.path.join(user_home, "miniconda3")
+        path_activate = f"~/miniconda3/bin/activate"
 
-    #     env_exist = checkEnvConda(args['name_env'],default_install_path)
+        env_exist = checkEnvConda(args.name_env,default_install_path)
 
-    #     if not env_exist :
-    #         path_conda = os.path.join(default_install_path,"bin","conda")
-    #         createCondaEnv(args['name_env'],default_install_path,path_conda,path_activate)
+        if not env_exist :
+            path_conda = os.path.join(default_install_path,"bin","conda")
+            createCondaEnv(args.name_env,default_install_path,path_conda,path_activate)
 
 
-    #     checkUpgrade(args['name_env'],path_activate)
+        checkUpgrade(args.name_env,path_activate)
 
-    #     command = f"bash -c 'source {path_activate} {args['name_env']} && dentalmodelseg --vtk {args['file']} --out {args['out']} --mount_point {args['mount_point']} --overwrite {args['overwrite']}'"
-    #     print("command : ",command)
-    #     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore',  executable="/bin/bash")
-    #     if result.returncode == 0:
-    #         print(f"Successfully executed: {command}")
-    #         print(result.stdout)
-    #     else:
-    #         print(f"Failed to execute: {command}")
-    #         print(result.stderr)
+        model = args.model
+        if model == "latest":
+            model = None
+
+        output = args.output
+
+        
+
+        # if model != "latest":
+        #     command = command + f" --model {model}"
+
+        # if args.overwrite == "True" :
+        #     command = command + f" --overwrite {args.overwrite}"
+
+        # if args.sepOutputs=="True":
+        #     command = command + f" --crown_segmentation {args.sepOutputs}"
+
+        command = f"bash -c 'source {path_activate} {args.name_env} && dentalmodelseg --vtk {args.input_vtk} --stl {args.input_stl} --csv {args.input_csv} --out {output} --overwrite {args.overwrite} --model {model} --crown_segmentation {args.sepOutputs} --array_name {args.predictedId} --fdi {args.chooseFDI} --suffix {args.suffix} --vtk_folder {args.vtk_folder}'"
+        print("command : ",command)
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore',  executable="/bin/bash")
+        if result.returncode == 0:
+            print(f"Successfully executed: {command}")
+            print(result.stdout)
+        else:
+            print(f"Failed to execute: {command}")
+            print(result.stderr)
 
 
 
@@ -341,18 +362,21 @@ if __name__ == "__main__":
     
     # }
     parser = argparse.ArgumentParser()
-    parser.add_argument('input',type=str)
+    parser.add_argument('input_vtk',type=str)
+    parser.add_argument('input_stl',type=str)
+    parser.add_argument('input_csv',type=str)
     parser.add_argument('output',type=str)
     parser.add_argument('subdivision_level',type = int)
     parser.add_argument('resolution',type=int)
     parser.add_argument('model',type=str)
     parser.add_argument('predictedId',type=str)
-    parser.add_argument('sepOutputs',type=int)
+    parser.add_argument('sepOutputs',type=str)
     parser.add_argument('chooseFDI',type=int)
     parser.add_argument('logPath',type=str)
-    parser.add_argument('mount_point',type=str)
-    parser.add_argument('overwrite',type=bool)
+    parser.add_argument('overwrite',type=str)
     parser.add_argument("name_env",type=str)
+    parser.add_argument("suffix",type=str)
+    parser.add_argument("vtk_folder",type=str)
 
     args = parser.parse_args()
     run(args)

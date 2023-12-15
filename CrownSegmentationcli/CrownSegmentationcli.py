@@ -134,18 +134,21 @@ def run(args):
     path_func_miniconda = os.path.join(current_directory,"Dentalmodelseg",'second.py') #Next files to call
 
     parameters = {}
-    parameters ["input"] = args.input
+    parameters ["input_vtk"] = args.input_vtk
+    parameters ["input_stl"] = args.input_stl
+    parameters ["input_csv"] = args.input_csv
     parameters ["output"] = args.output
     parameters ["subdivision_level"] = args.subdivision_level
     parameters ['resolution'] = args.resolution
     parameters ['model'] = args.model
     parameters ['predictedId'] = args.predictedId
-    parameters ['sepOutputs'] = int(args.sepOutputs)
+    parameters ['sepOutputs'] = args.sepOutputs
     parameters ['chooseFDI'] = int(args.chooseFDI)
     parameters ['logPath'] = args.logPath
-    parameters ['mount_point'] = args.mount_point
     parameters ['overwrite'] = args.overwrite
     parameters ['name_env'] = args.name_env
+    parameters ['suffix'] = args.suffix
+    parameters ['vtk_folder'] = args.vtk_folder
     
 
     command_to_execute = [python_path,path_func_miniconda]+ [f"{v}" for k, v in parameters.items()]  
@@ -178,18 +181,21 @@ def run(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('input',type=str)
+    parser.add_argument('input_vtk',type=str)
+    parser.add_argument('input_stl',type=str)
+    parser.add_argument('input_csv',type=str)
     parser.add_argument('output',type=str)
     parser.add_argument('subdivision_level',type = int)
     parser.add_argument('resolution',type=int)
     parser.add_argument('model',type=str)
     parser.add_argument('predictedId',type=str)
-    parser.add_argument('sepOutputs',type=int)
+    parser.add_argument('sepOutputs',type=str)
     parser.add_argument('chooseFDI',type=int)
     parser.add_argument('logPath',type=str)
-    parser.add_argument('mount_point',type=str)
-    parser.add_argument('overwrite',type=bool)
+    parser.add_argument('overwrite',type=str)
     parser.add_argument("name_env",type=str)
+    parser.add_argument("suffix",type=str)
+    parser.add_argument("vtk_folder",type=str)
 
     args = parser.parse_args()
     run(args)

@@ -12,6 +12,7 @@ import platform
 
 import webbrowser
 import json
+import csv
 
 #
 # CrownSegmentation
@@ -168,6 +169,8 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.ui.inputFolderLineEdit.textChanged.connect(self.onEditInputFolderLine)
     self.ui.modelLineEdit.textChanged.connect(self.onEditModelLine)    
     self.ui.githubButton.connect('clicked(bool)',self.onGithubButton)
+    self.ui.checkBoxLatestModel.stateChanged.connect(self.useLatestModel)
+    self.ui.checkBoxOverwrite.stateChanged.connect(self.overwrite)
     self.ui.surfaceComboBox.currentTextChanged.connect(self.onSurfaceModeChanged)
     self.ui.MRMLNodeComboBox.setMRMLScene(slicer.mrmlScene)
     self.ui.MRMLNodeComboBox.currentNodeChanged.connect(self.onNodeChanged)
@@ -196,6 +199,7 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.ui.openOutFolderButton.setHidden(True)
     self.ui.cancelButton.setHidden(True)
     self.ui.doneLabel.setHidden(True)
+    self.ui.githubButton.setHidden(True)
     
 
     #initialize variables
@@ -211,6 +215,15 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.MRMLNode = slicer.mrmlScene.GetNodeByID(self.ui.MRMLNodeComboBox.currentNodeID)
     self.chooseFDI = self.ui.labelComboBox.currentIndex
     #print(self.MRMLNode.GetName())
+
+    #Hide
+    self.ui.rotationSpinBox.setHidden(True)
+    self.ui.label_3.setHidden(True)
+    self.ui.rotationSlider.setHidden(True)
+    self.ui.resolutionComboBox.setHidden(True)
+    self.ui.label.setHidden(True)
+
+
 
     # qt.QSettings().setValue("TeethSegVisited",None)
     if qt.QSettings().value('TeethSegVisited') is None:
@@ -348,10 +361,13 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
   ###
 
   def onBrowseSurfaceButton(self):
-    newsurfaceFile = qt.QFileDialog.getOpenFileName(self.parent, "Select a surface",'',".vtk file (*.vtk)")
+    newsurfaceFile = qt.QFileDialog.getOpenFileName(self.parent, "Select a surface", '', "VTK and STL files (*.vtk *.stl)")
     if newsurfaceFile != '':
       self.input = newsurfaceFile
       self.ui.surfaceLineEdit.setText(self.input)
+
+    if self.ui.checkBoxOverwrite.checked :
+      self.ui.outputLineEdit.setText(os.path.dirname(self.ui.surfaceLineEdit.text))
     #print(f'Surface directory : {self.surfaceFile}')
 
 
@@ -361,6 +377,11 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
       self.input = newInputFolder
       print(self.input)
       self.ui.inputFolderLineEdit.setText(self.input)
+
+    if self.ui.checkBoxOverwrite.checked :
+      self.ui.outputLineEdit.setText(self.ui.inputFolderLineEdit.text)
+
+    
     #print(f'Output directory : {self.output}')   
 
 
@@ -370,6 +391,37 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
       self.model = newModel
       self.ui.modelLineEdit.setText(self.model)
     #print(f'Surface directory : {self.surfaceFile}')
+
+  def overwrite(self):
+    if self.ui.checkBoxOverwrite.checked:
+      self.ui.outputFileLineEdit.setEnabled(False)
+      self.ui.outputLineEdit.setEnabled(False)
+      self.ui.outputFileLineEdit.setText("None")
+      print(self.ui.surfaceLineEdit.text)
+      print(self.ui.surfaceComboBox.currentText)
+      if self.ui.surfaceComboBox.currentText=="Select file":
+        self.ui.outputLineEdit.setText(os.path.dirname(self.ui.surfaceLineEdit.text))
+      else : 
+        self.ui.outputLineEdit.setText(self.ui.inputFolderLineEdit.text)
+        print(self.ui.inputFolderLineEdit.text)
+
+
+    else : 
+      self.ui.outputFileLineEdit.setEnabled(True)
+      self.ui.outputLineEdit.setEnabled(True)
+      self.ui.outputFileLineEdit.setText("predict")
+
+
+  def useLatestModel(self):
+    if self.ui.checkBoxLatestModel.checked:
+      self.ui.browseModelButton.setEnabled(False)
+      self.ui.modelLineEdit.setEnabled(False)
+      self.ui.modelLineEdit.setText("latest")
+
+    else : 
+      self.ui.browseModelButton.setEnabled(True)
+      self.ui.modelLineEdit.setEnabled(True)
+
 
   def onGithubButton(self):
     # webbrowser.open('https://github.com/MathieuLeclercq/fly-by-cnn/blob/master/src/py/FiboSeg/best_metric_model_segmentation2d_array_v2_5.pth')
@@ -409,11 +461,13 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.ui.outputFileLabel.setHidden(False)
 
 
-    if choice == 'Select .vtk file':
+
+    if choice == 'Select file':
       self.inputChoice = InputChoice.VTK
       self.ui.surfaceLineEdit.setHidden(False)
       self.ui.browseSurfaceButton.setHidden(False)
       self.input = self.ui.surfaceLineEdit.text
+      self.ui.inputFolderLineEdit.setText("")
     elif choice == 'Select MRMLModelNode':
       self.inputChoice = InputChoice.MRML_NODE
       self.ui.MRMLNodeComboBox.setHidden(False)
@@ -422,9 +476,10 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
       self.ui.inputFolderLineEdit.setHidden(False)
       self.ui.inputFolderPushButton.setHidden(False)
       self.input = self.ui.inputFolderLineEdit.text
-      self.ui.outputFileLineEdit.setText("")
-      self.ui.outputFileLabel.setHidden(True)
-      self.ui.outputFileLineEdit.setHidden(True)
+      # self.ui.outputFileLineEdit.setText("")
+      # self.ui.surfaceLineEdit.setText("")
+      # self.ui.outputFileLabel.setHidden(True)
+      # self.ui.outputFileLineEdit.setHidden(True)
 
 
 
@@ -532,7 +587,7 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
   def onApplyChangesButton(self):
 
     #if ((self.inputChoice is InputChoice.MRML_NODE and self.MRMLNode is not None) or os.path.isfile(self.input) or os.path.isdir(self.input))  and os.path.isdir(self.outputFolder) and os.path.isfile(self.model):
-    if not(os.path.isdir(self.outputFolder) and os.path.isfile(self.model)):
+    if not(os.path.isdir(self.outputFolder) and (os.path.isfile(self.model) or self.model=="latest")):
       print('Error.')
       msg = qt.QMessageBox()
       if not(os.path.isdir(self.outputFolder)):
@@ -541,7 +596,7 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
         self.ui.outputLineEdit.setText('')
         print(f'output folder : {self.outputFolder}')
 
-      elif not(os.path.isfile(self.model)):
+      elif (not(os.path.isfile(self.model)) and self.model!="latest"):
         msg.setText("Model : \nIncorrect path.")
         print('Error: Incorrect path for model.')
         self.ui.modelLineEdit.setText('')
@@ -596,31 +651,79 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
         if self.inputChoice is InputChoice.MRML_NODE: # MRML node
           filename = self.writeVTKFromNode()
           self.logic = CrownSegmentationLogic(filename,
-                                              self.output,
+                                              "None",
+                                              "None",
+                                              self.ui.outputLineEdit.text,
                                               self.resolution, 
                                               self.rotation,
                                               self.model, 
                                               self.predictedId,
                                               self.ui.sepOutputsCheckbox.isChecked(),
                                               self.chooseFDI,
-                                              self.log_path)
+                                              self.log_path,
+                                              self.ui.checkBoxOverwrite.checked,
+                                              self.ui.outputFileLineEdit.text,
+                                              "None")
 
         else: # input folder/file
-          self.logic = CrownSegmentationLogic(self.input,
-                                              self.output,
+          input_vtk = "None"
+          input_stl = "None"
+          input_csv = "None"
+          vtk_folder = "None"
+          if os.path.isfile(self.input):
+              extension = os.path.splitext(self.input)[1]
+              if extension == ".vtk":
+                input_vtk = self.input
+              elif extension == ".stl" :
+                input_stl = self.input
+                
+          elif os.path.isdir(self.input):
+            input_csv = self.create_csv()
+            vtk_folder = self.input
+
+          
+
+          
+          self.logic = CrownSegmentationLogic(input_vtk,
+                                              input_stl,
+                                              input_csv,
+                                              self.ui.outputLineEdit.text,
                                               self.resolution, 
                                               self.rotation,
                                               self.model, 
                                               self.predictedId, 
                                               self.ui.sepOutputsCheckbox.isChecked(),
                                               self.chooseFDI,
-                                              self.log_path)
+                                              self.log_path,
+                                              self.ui.checkBoxOverwrite.checked,
+                                              self.ui.outputFileLineEdit.text,
+                                              vtk_folder)
 
         
         self.logic.process()
         #self.processObserver = self.logic.cliNode.AddObserver('ModifiedEvent',self.onProcessUpdate)
         self.addObserver(self.logic.cliNode,vtk.vtkCommand.ModifiedEvent,self.onProcessUpdate)
         self.onProcessStarted()
+
+
+  def create_csv(self):
+    file_path = os.path.abspath(__file__)
+    folder_path = os.path.dirname(file_path)
+    csv_file = os.path.join(folder_path,"list_file.csv")
+    with open(csv_file, 'w', newline='') as fichier:
+        writer = csv.writer(fichier)
+        # Écrire l'en-tête du CSV
+        writer.writerow(["surf"])
+
+        # Parcourir le dossier et ses sous-dossiers
+        for root, dirs, files in os.walk(self.input):
+            for file in files:
+                if file.endswith(".vtk") or file.endswith(".stl"):
+                    # Écrire le chemin complet du fichier dans le CSV
+                    writer.writerow([os.path.join(root, file)])
+
+    return csv_file
+
 
   def is_ubuntu_installed(self)->bool:
       '''
@@ -694,6 +797,11 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
       else:
         # success
         print('PROCESS DONE.')
+        file_path = os.path.abspath(__file__)
+        folder_path = os.path.dirname(file_path)
+        csv_file = os.path.join(folder_path,"list_file.csv")
+        if os.path.exists(csv_file):
+          os.remove(csv_file)
         print(self.logic.cliNode.GetOutputText())
         self.ui.doneLabel.setHidden(False)
         if os.path.isdir(self.output):
@@ -738,12 +846,14 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
   https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
   """
 
-  def __init__(self, input_ = None,output=None, resolution=None, rotation=None,model=None,predictedId=None,sepOutputs=None,chooseFDI=None,logPath=None):
+  def __init__(self, input_vtk = None,input_stl = None, input_csv = None,output=None, resolution=None, rotation=None,model=None,predictedId=None,sepOutputs=None,chooseFDI=None,logPath=None,overwrite=False,suffix="None",vtk_folder="None"):
     """
     Called when the logic class is instantiated. Can be used for initializing member variables.
     """
     ScriptedLoadableModuleLogic.__init__(self)
-    self.input = input_
+    self.input_vtk = input_vtk
+    self.input_stl = input_stl
+    self.input_csv = input_csv
     self.output = output
     self.resolution = resolution
     self.rotation = rotation
@@ -756,6 +866,9 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
     self.progress = 0
     self.cliNode = None
     self.installCliNode = None
+    self.overwrite = overwrite
+    self.suffix = suffix
+    self.vtk_folder = vtk_folder
     """
     print(f"model: {self.model}")
     print(f'input : {self.input}')
@@ -769,18 +882,21 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
 
   def process(self):
     parameters = {}
-    parameters ["input"] = os.path.basename(self.input)
+    parameters ["input_vtk"] =self.input_vtk
+    parameters ["input_stl"] =self.input_stl
+    parameters ["input_csv"] =self.input_csv
     parameters ["output"] = self.output
     parameters ["subdivision_level"] = self.rotation
     parameters ['resolution'] = self.resolution
     parameters ['model'] = self.model
     parameters ['predictedId'] = self.predictedId
-    parameters ['sepOutputs'] = int(self.sepOutputs)
+    parameters ['sepOutputs'] = str(self.sepOutputs)
     parameters ['chooseFDI'] = int(self.chooseFDI)
     parameters ['logPath'] = self.logPath
-    parameters ['mount_point'] = os.path.dirname(self.input)
-    parameters ['overwrite'] = True
+    parameters ['overwrite'] = str(self.overwrite)
     parameters ['name_env'] = "shapeAxi"
+    parameters ['suffix'] = self.suffix
+    parameters ['vtk_folder'] = self.vtk_folder
     print ('parameters : ', parameters)
     flybyProcess = slicer.modules.crownsegmentationcli
     self.cliNode = slicer.cli.run(flybyProcess,None, parameters)    

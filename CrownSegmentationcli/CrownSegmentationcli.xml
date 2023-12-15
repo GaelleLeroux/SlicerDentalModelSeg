@@ -17,44 +17,58 @@
     <description><![CDATA[Input/output parameters]]></description>
 
     <string>
-      <name>input</name>
-      <label>input</label>
+      <name>input_vtk</name>
+      <label>input_vtk</label>
       <index>0</index>
+      <description>Path for the surface file.</description>
+    </string>
+
+    <string>
+      <name>input_stl</name>
+      <label>input_stl</label>
+      <index>1</index>
+      <description>Path for the surface file.</description>
+    </string>
+
+    <string>
+      <name>input_csv</name>
+      <label>input_csv</label>
+      <index>2</index>
       <description>Path for the surface file.</description>
     </string>
 
     <string>
       <name>output</name>
       <label>output</label>
-      <index>1</index>
+      <index>3</index>
       <description>Path for output file.</description>
     </string>
 
     <integer>
       <name>subdivision_level</name>
       <label>subdivision_level</label>
-      <index>2</index>
+      <index>4</index>
       <description>Number of rotations</description>
     </integer>
 
     <integer>
       <name>resolution</name>
       <label>resolution</label>
-      <index>3</index>
+      <index>5</index>
       <description>Resolution of the images</description>
     </integer>
 
     <string>
       <name>model</name>
       <label>model</label>
-      <index>4</index>
+      <index>6</index>
       <description>Model used for segmentation</description>
     </string>
 
     <string>
       <name>predictedId</name>
       <label>predictedId</label>
-      <index>5</index>
+      <index>7</index>
       <description>Name of the new scalar.</description>
     </string>
 
@@ -62,14 +76,14 @@
     <integer>
       <name>sepOutputs</name>
       <label>sepOutputs</label>
-      <index>6</index>
+      <index>8</index>
       <description>Multiple output files.</description>
     </integer>
 
     <integer>
       <name>chooseFDI</name>
       <label>chooseFDI</label>
-      <index>7</index>
+      <index>9</index>
       <description>Numbering system</description>
     </integer>
 
@@ -77,29 +91,37 @@
     <string>
       <name>logPath</name>
       <label>logPath</label>
-      <index>8</index>
+      <index>10</index>
       <description>Path to write log to</description>
     </string>
 
-    <string>
-      <name>mount_point</name>
-      <label>mount_point</label>
-      <index>9</index>
-      <description>Path to files</description>
-    </string>
 
     <string>
       <name>overwrite</name>
       <label>overwrite</label>
-      <index>10</index>
+      <index>11</index>
       <description>overwrite or not the files</description>
     </string>
 
     <string>
       <name>name_env</name>
       <label>name_env</label>
-      <index>11</index>
+      <index>12</index>
       <description>name_env to run on miniconda</description>
+    </string>
+
+    <string>
+      <name>suffix</name>
+      <label>suffix</label>
+      <index>13</index>
+      <description>suffix for new files</description>
+    </string>
+
+    <string>
+      <name>vtk_folder</name>
+      <label>vtk_folder</label>
+      <index>14</index>
+      <description>suffix for new files</description>
     </string>
 
   </parameters>
