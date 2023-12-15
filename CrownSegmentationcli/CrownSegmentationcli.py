@@ -138,8 +138,6 @@ def run(args):
     parameters ["input_stl"] = args.input_stl
     parameters ["input_csv"] = args.input_csv
     parameters ["output"] = args.output
-    parameters ["subdivision_level"] = args.subdivision_level
-    parameters ['resolution'] = args.resolution
     parameters ['model'] = args.model
     parameters ['predictedId'] = args.predictedId
     parameters ['sepOutputs'] = args.sepOutputs
@@ -185,8 +183,6 @@ if __name__ == '__main__':
     parser.add_argument('input_stl',type=str)
     parser.add_argument('input_csv',type=str)
     parser.add_argument('output',type=str)
-    parser.add_argument('subdivision_level',type = int)
-    parser.add_argument('resolution',type=int)
     parser.add_argument('model',type=str)
     parser.add_argument('predictedId',type=str)
     parser.add_argument('sepOutputs',type=str)

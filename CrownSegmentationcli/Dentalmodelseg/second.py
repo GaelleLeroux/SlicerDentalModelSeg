@@ -329,16 +329,6 @@ def run(args):
 
         output = args.output
 
-        
-
-        # if model != "latest":
-        #     command = command + f" --model {model}"
-
-        # if args.overwrite == "True" :
-        #     command = command + f" --overwrite {args.overwrite}"
-
-        # if args.sepOutputs=="True":
-        #     command = command + f" --crown_segmentation {args.sepOutputs}"
 
         command = f"bash -c 'source {path_activate} {args.name_env} && dentalmodelseg --vtk {args.input_vtk} --stl {args.input_stl} --csv {args.input_csv} --out {output} --overwrite {args.overwrite} --model {model} --crown_segmentation {args.sepOutputs} --array_name {args.predictedId} --fdi {args.chooseFDI} --suffix {args.suffix} --vtk_folder {args.vtk_folder}'"
         print("command : ",command)
@@ -353,21 +343,11 @@ def run(args):
 
 
 if __name__ == "__main__":
-    # args = {
-    # "file": sys.argv[1],
-    # "out": sys.argv[2],
-    # "overwrite": sys.argv[3] == "true",
-    # "mount_point": sys.argv[4],
-    # "name_env":sys.argv[5]
-    
-    # }
     parser = argparse.ArgumentParser()
     parser.add_argument('input_vtk',type=str)
     parser.add_argument('input_stl',type=str)
     parser.add_argument('input_csv',type=str)
     parser.add_argument('output',type=str)
-    parser.add_argument('subdivision_level',type = int)
-    parser.add_argument('resolution',type=int)
     parser.add_argument('model',type=str)
     parser.add_argument('predictedId',type=str)
     parser.add_argument('sepOutputs',type=str)

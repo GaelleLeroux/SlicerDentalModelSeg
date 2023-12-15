@@ -216,12 +216,14 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.chooseFDI = self.ui.labelComboBox.currentIndex
     #print(self.MRMLNode.GetName())
 
-    #Hide
+    #Hidden
     self.ui.rotationSpinBox.setHidden(True)
     self.ui.label_3.setHidden(True)
     self.ui.rotationSlider.setHidden(True)
     self.ui.resolutionComboBox.setHidden(True)
     self.ui.label.setHidden(True)
+    self.ui.dependenciesButton.setHidden(True)
+    self.ui.installProgressBar.setHidden(True)
 
 
 
@@ -654,8 +656,6 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                                               "None",
                                               "None",
                                               self.ui.outputLineEdit.text,
-                                              self.resolution, 
-                                              self.rotation,
                                               self.model, 
                                               self.predictedId,
                                               self.ui.sepOutputsCheckbox.isChecked(),
@@ -688,8 +688,6 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                                               input_stl,
                                               input_csv,
                                               self.ui.outputLineEdit.text,
-                                              self.resolution, 
-                                              self.rotation,
                                               self.model, 
                                               self.predictedId, 
                                               self.ui.sepOutputsCheckbox.isChecked(),
@@ -846,7 +844,7 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
   https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
   """
 
-  def __init__(self, input_vtk = None,input_stl = None, input_csv = None,output=None, resolution=None, rotation=None,model=None,predictedId=None,sepOutputs=None,chooseFDI=None,logPath=None,overwrite=False,suffix="None",vtk_folder="None"):
+  def __init__(self, input_vtk = None,input_stl = None, input_csv = None,output=None,model=None,predictedId=None,sepOutputs=None,chooseFDI=None,logPath=None,overwrite=False,suffix="None",vtk_folder="None"):
     """
     Called when the logic class is instantiated. Can be used for initializing member variables.
     """
@@ -855,8 +853,6 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
     self.input_stl = input_stl
     self.input_csv = input_csv
     self.output = output
-    self.resolution = resolution
-    self.rotation = rotation
     self.model = model
     self.predictedId = predictedId
     self.sepOutputs = sepOutputs
@@ -886,8 +882,6 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
     parameters ["input_stl"] =self.input_stl
     parameters ["input_csv"] =self.input_csv
     parameters ["output"] = self.output
-    parameters ["subdivision_level"] = self.rotation
-    parameters ['resolution'] = self.resolution
     parameters ['model'] = self.model
     parameters ['predictedId'] = self.predictedId
     parameters ['sepOutputs'] = str(self.sepOutputs)
