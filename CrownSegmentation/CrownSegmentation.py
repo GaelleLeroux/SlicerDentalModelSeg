@@ -696,8 +696,60 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                                               self.ui.checkBoxOverwrite.checked,
                                               self.ui.outputFileLineEdit.text,
                                               vtk_folder)
+        #TEST
+        # model = self.model
+        # if model == "latest":
+        #     model = None
+        # command_to_execute = ['conda','run','-n','shapeAxi',f'dentalmodelseg --vtk {input_vtk} --stl {input_stl} --csv {input_csv} --out {self.ui.outputLineEdit.text} --overwrite {self.ui.checkBoxOverwrite.checked} --model {model} --crown_segmentation {self.ui.sepOutputsCheckbox.isChecked()} --array_name {self.predictedId} --fdi {self.chooseFDI} --suffix {self.ui.outputFileLineEdit.text} --vtk_folder {vtk_folder}']
+        # command_to_execute = [
+        #     'conda', 'run', '-n', 'shapeAxi', 
+        #     'dentalmodelseg', 
+        #     '--vtk', '/home/luciacev/Documents/Gaelle/Data/CrownSegmentation/vtk_no_segmented/T1_nosegmented.vtk', 
+        #     '--stl', 'None', 
+        #     '--csv', 'None', 
+        #     '--out', '/home/luciacev/Documents/Gaelle/Data/CrownSegmentation/output/', 
+        #     '--overwrite', 'False', 
+        #     '--model', 'None', 
+        #     '--crown_segmentation', 'False', 
+        #     '--array_name', 'Universal_ID', 
+        #     '--fdi', '0', 
+        #     '--suffix', 'predict', 
+        #     '--vtk_folder', 'None'
+        # ]
 
+        # command_to_execute = ['/home/luciacev/miniconda3/bin/conda','run','-n','shapeAxi','python','/home/luciacev/Desktop/SlicerDentalModelSeg/CrownSegmentation/test.py']
+        # command_to_execute = ['conda','run','-n','shapeAxi','python','/home/luciacev/Desktop/SlicerDentalModelSeg/CrownSegmentation/test.py']
         
+
+
+        # path_env = os.environ.get('PATH', '')
+
+        # # Afficher la variable PATH
+        # print("PATH complet:")
+        # print(path_env)
+
+        # # Séparer la variable PATH en différents chemins
+        # path_list = path_env.split(os.pathsep)
+
+        # # Filtrer pour trouver les chemins qui contiennent 'miniconda3' ou 'anaconda3'
+        # conda_paths = [path for path in path_list if 'miniconda3' in path or 'anaconda3' in path]
+
+
+        # print("on run")
+        # result = subprocess.run(command_to_execute, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,env=slicer.util.startupEnvironment())
+
+        # if result.returncode != 0:
+        #     print(f"Error creating the environment. Return code: {result.returncode}")
+        #     print("result.stdout : ","*"*150)
+        #     print(result.stdout)
+        #     print("result.stderr : ","*"*150)
+        #     print(result.stderr)
+        # else:
+        #     print(result.stdout)
+        #     print("Environment created successfully.")
+
+
+        #END TEST
         self.logic.process()
         #self.processObserver = self.logic.cliNode.AddObserver('ModifiedEvent',self.onProcessUpdate)
         self.addObserver(self.logic.cliNode,vtk.vtkCommand.ModifiedEvent,self.onProcessUpdate)
