@@ -288,8 +288,11 @@ def run(args):
         checkUpgradeWsl(args.name_env)
         
         name = args.name_env
-        out = windows_to_linux_path(args.input)
-        mount_point = windows_to_linux_path(args.mount_point)
+        out = windows_to_linux_path(args.output)
+        vtk = windows_to_linux_path(args.input_vtk)
+        stl = windows_to_linux_path(args.input_stl)
+        csv = windows_to_linux_path(args.input_csv)
+        vtk_folder = windows_to_linux_path(args.vtk_folder)
         model = args.model
         if model == "latest":
             model = None
@@ -297,7 +300,7 @@ def run(args):
             model = windows_to_linux_path(model)
 
         path_activate = f"~/miniconda3/bin/activate"
-        command = f"wsl -- bash -c \"source {path_activate} {name} && dentalmodelseg --vtk {args.input} --stl {args.input_stl} --csv {args.input_csv} --out {out} --overwrite {args.overwrite} --model {model} --crown_segmentation {args.sepOutputs} --array_name {args.predictedId} --fdi{args.chooseFDI} --suffix {args.suffix}\""
+        command = f"wsl -- bash -c \"source {path_activate} {name} && dentalmodelseg --vtk {vtk} --stl {stl} --csv {csv} --out {out} --overwrite {args.overwrite} --model {model} --crown_segmentation {args.sepOutputs} --array_name {args.predictedId} --fdi{args.chooseFDI} --suffix {args.suffix} --vtk_folder {vtk_folder}\""
         print("command : ",command)
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='ignore')
         if result.returncode == 0:
