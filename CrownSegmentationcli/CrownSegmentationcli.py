@@ -9,6 +9,7 @@ import platform
 import urllib
 import subprocess
 import shutil
+import slicer
 
 
 def checkMiniconda():
@@ -151,7 +152,7 @@ def run(args):
 
     command_to_execute = [python_path,path_func_miniconda]+ [f"{v}" for k, v in parameters.items()]  
 
-    print("command to execute : ",command_to_execute)
+    # print("command to execute : ",command_to_execute)
 
     env = dict(os.environ)
     if 'PYTHONPATH' in env:
@@ -159,8 +160,16 @@ def run(args):
     if 'PYTHONHOME' in env:
         del env['PYTHONHOME']
 
-    result = subprocess.run(command_to_execute, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,env=env)
 
+    # model = args.model
+    # if model == "latest":
+    #     model = None
+
+    # command_to_execute = ['conda','run','-n',args.name_env,f'dentalmodelseg --vtk {args.input_vtk} --stl {args.input_stl} --csv {args.input_csv} --out {args.output} --overwrite {args.overwrite} --model {model} --crown_segmentation {args.sepOutputs} --array_name {args.predictedId} --fdi {args.chooseFDI} --suffix {args.suffix} --vtk_folder {args.vtk_folder}']
+    # print("command : ",command_to_execute)
+    # result = subprocess.run(command_to_execute, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,env=slicer.util.startupEnvironment())
+
+    result = subprocess.run(command_to_execute, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,env=env)
 
     if result.returncode != 0:
         print(f"Error creating the environment. Return code: {result.returncode}")
