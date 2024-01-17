@@ -547,7 +547,7 @@
    <item alignment="Qt::AlignHCenter">
     <widget class="QLabel" name="timeLabel">
      <property name="text">
-      <string>None</string>
+      <string>time : 0s</string>
      </property>
     </widget>
    </item>
