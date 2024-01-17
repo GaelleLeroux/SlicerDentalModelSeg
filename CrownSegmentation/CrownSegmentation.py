@@ -10,7 +10,7 @@ from enum import Enum
 import subprocess
 import platform
 
-from CondaSetUp import  CondaSetUpCall
+from CondaSetUp import  CondaSetUpCall,CondaSetUpCallWsl
 
 import webbrowser
 import json
@@ -643,127 +643,7 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
       return
 
     else:
-      # Ready to start cli module
-      # ready = True 
-      # system = platform.system()
-      # if system == "Windows" :
-      #     wsl = self.is_ubuntu_installed()
-      #     if wsl :
-      #       ready = True
-      #     else :
-      #       messageBox = qt.QMessageBox()
-      #       text = "Code can't be launch. \nWSL is not installed, please download the installer and follow the instructin here : https://github.com/DCBIA-OrthoLab/SlicerAutomatedDentalTools/releases/download/wsl2_windows/installer_wsl2.zip\nDownloading may be blocked by Chrome, this is normal, just authorize it."
-      #       ready = False
-      #       messageBox.information(None, "Information", text)
-              
-      # if ready :
-      #   self.ui.applyChangesButton.setEnabled(False)
-      #   self.ui.progressBar.setEnabled(True)
-      #   if self.inputChoice is InputChoice.MRML_NODE: # MRML node
-      #     filename = self.writeVTKFromNode()
-      #     self.logic = CrownSegmentationLogic(filename,
-      #                                         "None",
-      #                                         "None",
-      #                                         self.ui.outputLineEdit.text,
-      #                                         self.model, 
-      #                                         self.predictedId,
-      #                                         self.ui.sepOutputsCheckbox.isChecked(),
-      #                                         self.chooseFDI,
-      #                                         self.log_path,
-      #                                         self.ui.checkBoxOverwrite.checked,
-      #                                         self.ui.outputFileLineEdit.text,
-      #                                         "None")
-
-      #   else: # input folder/file
-      #     input_vtk = "None"
-      #     input_stl = "None"
-      #     input_csv = "None"
-      #     vtk_folder = "None"
-      #     if os.path.isfile(self.input):
-      #         extension = os.path.splitext(self.input)[1]
-      #         if extension == ".vtk":
-      #           input_vtk = self.input
-      #         elif extension == ".stl" :
-      #           input_stl = self.input
-                
-      #     elif os.path.isdir(self.input):
-      #       input_csv = self.create_csv()
-      #       vtk_folder = self.input
-
-          
-
-          
-      #     self.logic = CrownSegmentationLogic(input_vtk,
-      #                                         input_stl,
-      #                                         input_csv,
-      #                                         self.ui.outputLineEdit.text,
-      #                                         self.model, 
-      #                                         self.predictedId, 
-      #                                         self.ui.sepOutputsCheckbox.isChecked(),
-      #                                         self.chooseFDI,
-      #                                         self.log_path,
-      #                                         self.ui.checkBoxOverwrite.checked,
-      #                                         self.ui.outputFileLineEdit.text,
-      #                                         vtk_folder)
-        #TEST
-        # model = self.model
-        # if model == "latest":
-        #     model = None
-        # command_to_execute = ['conda','run','-n','shapeAxi',f'dentalmodelseg --vtk {input_vtk} --stl {input_stl} --csv {input_csv} --out {self.ui.outputLineEdit.text} --overwrite {self.ui.checkBoxOverwrite.checked} --model {model} --crown_segmentation {self.ui.sepOutputsCheckbox.isChecked()} --array_name {self.predictedId} --fdi {self.chooseFDI} --suffix {self.ui.outputFileLineEdit.text} --vtk_folder {vtk_folder}']
-        # command_to_execute = [
-        #     'conda', 'run', '-n', 'shapeAxi', 
-        #     'dentalmodelseg', 
-        #     '--vtk', '/home/luciacev/Documents/Gaelle/Data/CrownSegmentation/vtk_no_segmented/T1_nosegmented.vtk', 
-        #     '--stl', 'None', 
-        #     '--csv', 'None', 
-        #     '--out', '/home/luciacev/Documents/Gaelle/Data/CrownSegmentation/output/', 
-        #     '--overwrite', 'False', 
-        #     '--model', 'None', 
-        #     '--crown_segmentation', 'False', 
-        #     '--array_name', 'Universal_ID', 
-        #     '--fdi', '0', 
-        #     '--suffix', 'predict', 
-        #     '--vtk_folder', 'None'
-        # ]
-
-        # command_to_execute = ['/home/luciacev/miniconda3/bin/conda','run','-n','shapeAxi','python','/home/luciacev/Desktop/SlicerDentalModelSeg/CrownSegmentation/test.py']
-        # command_to_execute = ['conda','run','-n','shapeAxi','python','/home/luciacev/Desktop/SlicerDentalModelSeg/CrownSegmentation/test.py']
-        
-
-
-        # path_env = os.environ.get('PATH', '')
-
-        # # Afficher la variable PATH
-        # print("PATH complet:")
-        # print(path_env)
-
-        # # Séparer la variable PATH en différents chemins
-        # path_list = path_env.split(os.pathsep)
-
-        # # Filtrer pour trouver les chemins qui contiennent 'miniconda3' ou 'anaconda3'
-        # conda_paths = [path for path in path_list if 'miniconda3' in path or 'anaconda3' in path]
-
-
-        # print("on run")
-        # result = subprocess.run(command_to_execute, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,env=slicer.util.startupEnvironment())
-
-        # if result.returncode != 0:
-        #     print(f"Error creating the environment. Return code: {result.returncode}")
-        #     print("result.stdout : ","*"*150)
-        #     print(result.stdout)
-        #     print("result.stderr : ","*"*150)
-        #     print(result.stderr)
-        # else:
-        #     print(result.stdout)
-        #     print("Environment created successfully.")
-
-
-        #END TEST
-        # self.logic.process()
-        # #self.processObserver = self.logic.cliNode.AddObserver('ModifiedEvent',self.onProcessUpdate)
-        # self.addObserver(self.logic.cliNode,vtk.vtkCommand.ModifiedEvent,self.onProcessUpdate)
-        # self.onProcessStarted()
-
+        # create input parameters
         input_vtk = "None"
         input_stl = "None"
         input_csv = "None"
@@ -779,28 +659,54 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
           input_csv = self.create_csv()
           vtk_folder = self.input
 
-          
-        conda = CondaSetUpCall()
-        path_conda = conda.getCondaPath()
-        if path_conda == "None":
-          slicer.util.infoDisplay("Path to conda is no set up. Open the module SlicerConda to do it",windowTitle="Can't found conda path")
-        else :
-          name_env = "shapeAxi"
-          flag = True
-          if not conda.condaTestEnv(name_env):
-            userResponse = slicer.util.confirmYesNoDisplay("The environnement to run the segmentation doesn't exist, do you want to create it ? ", windowTitle="Env doesn't exist")
-            if userResponse :
-              msg_box = qt.QMessageBox()
-              msg_box.setIcon(qt.QMessageBox.Information)
+        if platform.system() != "Windows" : #if linux system
+          conda = CondaSetUpCall()
+          path_conda = conda.getCondaPath()
+          if path_conda == "None": # if conda is not setup 
+            slicer.util.infoDisplay("Path to conda is no set up. Open the module SlicerConda to do it",windowTitle="Can't found conda path")
+          else : # if conda is setup
+            name_env = "shapeAxi"
+            flag = True
+            if not conda.condaTestEnv(name_env): # if environnement is not created, ask user if can create it
+              userResponse = slicer.util.confirmYesNoDisplay("The environnement to run the segmentation doesn't exist, do you want to create it ? ", windowTitle="Env doesn't exist")
+              if userResponse : # if user is ok to create the environnement and install shape axi on it
+                msg_box = qt.QMessageBox()
+                msg_box.setIcon(qt.QMessageBox.Information)
+                start_time = time.time()
+                previous_time = start_time
+                msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: 0.0s")
+                msg_box.setStandardButtons(qt.QMessageBox.NoButton)
+                msg_box.show()
+
+                process = threading.Thread(target=conda.condaCreateEnv, args=(name_env,"3.9",["shapeaxi"],))
+                process.start()
+
+                while process.is_alive():
+                    slicer.app.processEvents()
+                    current_time = time.time()
+                    gap=current_time-previous_time
+                    if gap>0.3:
+                        previous_time = current_time
+                        elapsed_time = current_time - start_time
+                        msg_box.setText(f"Your file wasn't segmented.\nSegmentation in process. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+              else :
+                flag = False
+
+            if flag : # if everything ok, run dentalmodelseg
+              model = self.model
+              if self.model == "latest":
+                model = None
+
+              command = [f'dentalmodelseg --vtk {input_vtk} --stl {input_stl} --csv {input_csv} --out {self.ui.outputLineEdit.text} --overwrite {self.ui.checkBoxOverwrite.checked} --model {model} --crown_segmentation {self.ui.sepOutputsCheckbox.isChecked()} --array_name {self.predictedId} --fdi {self.chooseFDI} --suffix {self.ui.outputFileLineEdit.text} --vtk_folder {vtk_folder}']
+              process = threading.Thread(target=conda.condaRunCommand, args=(name_env,command,))
+              process.start()
+              self.ui.applyChangesButton.setEnabled(False)
+              self.ui.doneLabel.setHidden(True)
+              self.ui.timeLabel.setHidden(False)
+              self.ui.progressLabel.setHidden(False)
+              self.ui.timeLabel.setText(f"time : 0.00s")
               start_time = time.time()
               previous_time = start_time
-              msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: 0.0s")
-              msg_box.setStandardButtons(qt.QMessageBox.NoButton)
-              msg_box.show()
-
-              process = threading.Thread(target=conda.condaCreateEnv, args=(name_env,"3.9",["shapeaxi"],))
-              process.start()
-
               while process.is_alive():
                   slicer.app.processEvents()
                   current_time = time.time()
@@ -808,57 +714,170 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                   if gap>0.3:
                       previous_time = current_time
                       elapsed_time = current_time - start_time
-                      msg_box.setText(f"Your file wasn't segmented.\nSegmentation in process. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
-              else :
-                flag = False
+                      self.ui.timeLabel.setText(f"time : {elapsed_time:.2f}s")
 
-          if flag :
-            model = self.model
-            if self.model == "latest":
-              model = None
+              self.ui.progressLabel.setHidden(True)
+              self.ui.doneLabel.setHidden(False)
+              self.ui.applyChangesButton.setEnabled(True)
 
-            command = [f'dentalmodelseg --vtk {input_vtk} --stl {input_stl} --csv {input_csv} --out {self.ui.outputLineEdit.text} --overwrite {self.ui.checkBoxOverwrite.checked} --model {model} --crown_segmentation {self.ui.sepOutputsCheckbox.isChecked()} --array_name {self.predictedId} --fdi {self.chooseFDI} --suffix {self.ui.outputFileLineEdit.text} --vtk_folder {vtk_folder}']
-            process = threading.Thread(target=conda.condaRunCommand, args=(name_env,command,))
-            process.start()
-            self.ui.applyChangesButton.setEnabled(False)
-            self.ui.doneLabel.setHidden(True)
-            self.ui.timeLabel.setHidden(False)
-            self.ui.progressLabel.setHidden(False)
-            self.ui.timeLabel.setText(f"time : 0.00s")
-            start_time = time.time()
-            previous_time = start_time
-            while process.is_alive():
-                slicer.app.processEvents()
-                current_time = time.time()
-                gap=current_time-previous_time
-                if gap>0.3:
-                    previous_time = current_time
-                    elapsed_time = current_time - start_time
-                    self.ui.timeLabel.setText(f"time : {elapsed_time:.2f}s")
-
-            self.ui.progressLabel.setHidden(True)
-            self.ui.doneLabel.setHidden(False)
-            self.ui.applyChangesButton.setEnabled(True)
-
-            file_path = os.path.abspath(__file__)
-            folder_path = os.path.dirname(file_path)
-            csv_file = os.path.join(folder_path,"list_file.csv")
-            if os.path.exists(csv_file):
-              os.remove(csv_file)
-          
-
+              file_path = os.path.abspath(__file__)
+              folder_path = os.path.dirname(file_path)
+              csv_file = os.path.join(folder_path,"list_file.csv")
+              if os.path.exists(csv_file):
+                os.remove(csv_file)
+        else : # if windows system
+            self.conda_wsl = CondaSetUpCallWsl()  
+            wsl = self.conda_wsl.testWslAvailable()
+            ready = True
+            if wsl : # if wsl is install
+              lib = self.check_lib_wsl()
+              if not lib : # if lib required are not install
+                  messageBox = qt.QMessageBox()
+                  text = "Code can't be launch. \nWSL doen't have all the necessary libraries, please download the installer and follow the instructin here : https://github.com/DCBIA-OrthoLab/SlicerAutomatedDentalTools/releases/download/wsl2_windows/installer_wsl2.zip\nDownloading may be blocked by Chrome, this is normal, just authorize it."
+                  ready = False
+                  messageBox.information(None, "Information", text)
+            else :
+              messageBox = qt.QMessageBox()
+              text = "Code can't be launch. \nWSL is not installed, please download the installer and follow the instructin here : https://github.com/DCBIA-OrthoLab/SlicerAutomatedDentalTools/releases/download/wsl2_windows/installer_wsl2.zip\nDownloading may be blocked by Chrome, this is normal, just authorize it."
+              ready = False
+              messageBox.information(None, "Information", text)
+            
+            if ready :
               
+              if "Error" in self.conda_wsl.condaRunCommand([self.conda_wsl.getCondaExecutable(),"--version"]): # if conda is setup
+                    messageBox = qt.QMessageBox()
+                    text = "Code can't be launch. \nConda is not setup in WSL. Please go the extension CondaSetUp in SlicerConda to do it."
+                    ready = False
+                    messageBox.information(None, "Information", text)
+                    
+            if ready :
+              if not self.conda_wsl.condaTestEnv('shapeaxi') : # check is environnement exist, if not ask user the permission to do it
+                userResponse = slicer.util.confirmYesNoDisplay("The environnement to run the segmentation doesn't exist, do you want to create it ? ", windowTitle="Env doesn't exist")
+                if userResponse :
+                  msg_box = qt.QMessageBox()
+                  msg_box.setIcon(qt.QMessageBox.Information)
+                  start_time = time.time()
+                  previous_time = start_time
+                  msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: 0.0s")
+                  msg_box.setStandardButtons(qt.QMessageBox.NoButton)
+                  msg_box.show()
+                  name_env = "shapeaxi"
+                  process = threading.Thread(target=self.conda_wsl.condaCreateEnv, args=(name_env,"3.9",["shapeaxi"],)) #run in paralle to not block slicer
+                  process.start()
+                  
+                  while process.is_alive():
+                    slicer.app.processEvents()
+                    current_time = time.time()
+                    gap=current_time-previous_time
+                    if gap>0.3:
+                        previous_time = current_time
+                        elapsed_time = current_time - start_time
+                        msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+                  msg_box.close()
+                  
+                  msg_box = qt.QMessageBox()
+                  msg_box.setIcon(qt.QMessageBox.Information)
+                  start_time = time.time()
+                  previous_time = start_time
+                  msg_box.setText(f"Installation of librairies into the new environnement. This task may take a few minutes.\ntime: 0.0s")
+                  msg_box.setStandardButtons(qt.QMessageBox.NoButton)
+                  msg_box.show()
+                  name_env = "shapeaxi"
+                  file_path = os.path.realpath(__file__)
+                  folder = os.path.dirname(file_path)
+                  utils_folder = os.path.join(folder, "utils")
+                  utils_folder_norm = os.path.normpath(utils_folder)
+                  install_path = self.windows_to_linux_path(os.path.join(utils_folder_norm, 'install_pytorch.py'))
+                  path_pip = self.conda_wsl.getCondaPath()+"/envs/shapeaxi/bin/pip"
+                  process = threading.Thread(target=self.conda_wsl.condaRunFilePython, args=(install_path,name_env,[path_pip],)) # launch install_pythorch.py with the environnement ali_ios to install pytorch3d on it
+                  process.start()
+                  
+                  while process.is_alive():
+                    slicer.app.processEvents()
+                    current_time = time.time()
+                    gap=current_time-previous_time
+                    if gap>0.3:
+                        previous_time = current_time
+                        elapsed_time = current_time - start_time
+                        msg_box.setText(f"Installation of librairies into the new environnement. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+                  msg_box.close()
+                else :
+                    ready = False
+                    
+            if ready : # if everything is ready launch dentalmodelseg on the environnement ali_ios in wsl
+              model = self.model
+              if self.model == "latest":
+                model = None
+              else :
+                model = self.windows_to_linux_path(model)
 
+              command = [f'dentalmodelseg --vtk {self.windows_to_linux_path(input_vtk)} --stl {self.windows_to_linux_path(input_stl)} --csv {self.windows_to_linux_path(input_csv)} --out {self.windows_to_linux_path(self.ui.outputLineEdit.text)} --overwrite {self.ui.checkBoxOverwrite.checked} --model {model} --crown_segmentation {self.ui.sepOutputsCheckbox.isChecked()} --array_name {self.predictedId} --fdi {self.chooseFDI} --suffix {self.ui.outputFileLineEdit.text} --vtk_folder {self.windows_to_linux_path(vtk_folder)}']
+              print("command : ",command)
+              name_env = "shapeaxi"
+              process = threading.Thread(target=self.conda_wsl.condaRunCommand, args=([command], "shapeaxi"))
+              process.start()
+              self.ui.applyChangesButton.setEnabled(False)
+              self.ui.doneLabel.setHidden(True)
+              self.ui.timeLabel.setHidden(False)
+              self.ui.progressLabel.setHidden(False)
+              self.ui.timeLabel.setText(f"time : 0.00s")
+              start_time = time.time()
+              previous_time = start_time
+              while process.is_alive():
+                  slicer.app.processEvents()
+                  current_time = time.time()
+                  gap=current_time-previous_time
+                  if gap>0.3:
+                      previous_time = current_time
+                      elapsed_time = current_time - start_time
+                      self.ui.timeLabel.setText(f"time : {elapsed_time:.2f}s")
 
-           
+              print("self.output : ",self.output)
+              self.ui.progressLabel.setHidden(True)
+              self.ui.doneLabel.setHidden(False)
+              self.ui.applyChangesButton.setEnabled(True)
 
+              file_path = os.path.abspath(__file__)
+              folder_path = os.path.dirname(file_path)
+              csv_file = os.path.join(folder_path,"list_file.csv")
+              if os.path.exists(csv_file):
+                os.remove(csv_file)
 
-  def update_message_box(self,msg_box, start_time):
-        elapsed_time = time.time() - start_time
-        msg_box.setText(f"Your file wasn't segmented.\nSegmentation in process. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+          
+  def windows_to_linux_path(self,windows_path):
+      '''
+      Convert a windows path to a wsl path
+      '''
+      windows_path = windows_path.strip()
+
+      path = windows_path.replace('\\', '/')
+
+      if ':' in path:
+          drive, path_without_drive = path.split(':', 1)
+          path = "/mnt/" + drive.lower() + path_without_drive
+
+      return path
+              
+  def check_lib_wsl(self)->bool:
+      '''
+      Check if wsl contains the require librairies
+      '''
+      result1 = subprocess.run("wsl -- bash -c \"dpkg -l | grep libxrender1\"", capture_output=True, text=True)
+      output1 = result1.stdout.encode('utf-16-le').decode('utf-8')
+      clean_output1 = output1.replace('\x00', '')
+
+      result2 = subprocess.run("wsl -- bash -c \"dpkg -l | grep libgl1-mesa-glx\"", capture_output=True, text=True)
+      output2 = result2.stdout.encode('utf-16-le').decode('utf-8')
+      clean_output2 = output2.replace('\x00', '')
+
+      return "libxrender1" in clean_output1 and "libgl1-mesa-glx" in clean_output2
+
 
 
   def create_csv(self):
+    '''
+    create a csv with the complete path of the files in the folder
+    '''
     file_path = os.path.abspath(__file__)
     folder_path = os.path.dirname(file_path)
     csv_file = os.path.join(folder_path,"list_file.csv")
@@ -872,7 +891,13 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
             for file in files:
                 if file.endswith(".vtk") or file.endswith(".stl"):
                     # Écrire le chemin complet du fichier dans le CSV
-                    writer.writerow([os.path.join(root, file)])
+                    if platform.system() != "Windows" :    
+                      writer.writerow([os.path.join(root, file)])
+                    else :
+                      file_path = os.path.join(root, file)
+                      norm_file_path = os.path.normpath(file_path)
+                      writer.writerow([self.windows_to_linux_path(norm_file_path)])
+
 
     return csv_file
 
