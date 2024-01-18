@@ -688,7 +688,27 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                     if gap>0.3:
                         previous_time = current_time
                         elapsed_time = current_time - start_time
-                        msg_box.setText(f"Your file wasn't segmented.\nSegmentation in process. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+                        msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+                # msg_box.close()
+                file_path = os.path.realpath(__file__)
+                folder = os.path.dirname(file_path)
+                utils_folder = os.path.join(folder, "utils")
+                utils_folder_norm = os.path.normpath(utils_folder)
+                install_path = os.path.join(utils_folder_norm, 'install_pytorch.py')
+                path_pip = conda.getCondaPath()+f"/envs/{name_env}/bin/pip"
+                print("file_path : ",file_path)
+                print("path_pip : ",path_pip)
+                process = threading.Thread(target=conda.condaRunPythonFile, args=(install_path,[path_pip],name_env))
+                process.start()
+                while process.is_alive():
+                    slicer.app.processEvents()
+                    current_time = time.time()
+                    gap=current_time-previous_time
+                    if gap>0.3:
+                        previous_time = current_time
+                        elapsed_time = current_time - start_time
+                        msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
+                msg_box.close()
               else :
                 flag = False
 

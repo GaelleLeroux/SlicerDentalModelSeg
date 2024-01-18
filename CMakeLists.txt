@@ -20,7 +20,6 @@ include(${Slicer_USE_FILE})
 #-----------------------------------------------------------------------------
 # Extension modules
 add_subdirectory(CrownSegmentation)
-add_subdirectory(CrownSegmentationcli)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
