@@ -1,9 +1,6 @@
 import os
-import sys
 import glob
-import unittest
-import logging
-import vtk, qt, ctk, slicer
+import vtk, qt, slicer
 from slicer.ScriptedLoadableModule import *
 from slicer.util import VTKObservationMixin
 from enum import Enum
@@ -13,13 +10,9 @@ import platform
 from CondaSetUp import  CondaSetUpCall,CondaSetUpCallWsl
 
 import webbrowser
-import json
 import csv
 import io
-import multiprocessing
 import time
-import qt
-import queue
 import threading
 #
 # CrownSegmentation
