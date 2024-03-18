@@ -123,6 +123,8 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.time_log = 0 # for progress bar
     self.progress = 0
     self.currentPredDict = {}
+    self.previous_time = 0
+    self.start_time = 0
 
 
   def setup(self):
@@ -658,7 +660,7 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
           if path_conda == "None": # if conda is not setup 
             slicer.util.infoDisplay("Path to conda is no set up. Open the module SlicerConda to do it",windowTitle="Can't found conda path")
           else : # if conda is setup
-            name_env = "shapeAxi"
+            name_env = "shapeaxi"
             flag = True
             if not conda.condaTestEnv(name_env): # if environnement is not created, ask user if can create it
               userResponse = slicer.util.confirmYesNoDisplay("The environnement to run the segmentation doesn't exist, do you want to create it ? ", windowTitle="Env doesn't exist")
@@ -743,11 +745,12 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
             wsl = self.conda_wsl.testWslAvailable()
             ready = True
             self.ui.timeLabel.setHidden(False)
-            self.ui.timeLabel.setText(f"Checking if wsl is installed")
+            self.ui.timeLabel.setText(f"Checking if wsl is installed, this task may take a moments")
+            slicer.app.processEvents()
             if wsl : # if wsl is install
               lib = self.check_lib_wsl()
               if not lib : # if lib required are not install
-                  self.ui.timeLabel.setText(f"Checking if the required librairies are installed")
+                  self.ui.timeLabel.setText(f"Checking if the required librairies are installed, this task may take a moments")
                   messageBox = qt.QMessageBox()
                   text = "Code can't be launch. \nWSL doen't have all the necessary libraries, please download the installer and follow the instructin here : https://github.com/DCBIA-OrthoLab/SlicerAutomatedDentalTools/releases/download/wsl2_windows/installer_wsl2.zip\nDownloading may be blocked by Chrome, this is normal, just authorize it."
                   ready = False
@@ -771,14 +774,9 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
               if not self.conda_wsl.condaTestEnv('shapeaxi') : # check is environnement exist, if not ask user the permission to do it
                 userResponse = slicer.util.confirmYesNoDisplay("The environnement to run the segmentation doesn't exist, do you want to create it ? ", windowTitle="Env doesn't exist")
                 if userResponse :
-                  # msg_box = qt.QMessageBox()
-                  # msg_box.setIcon(qt.QMessageBox.Information)
                   start_time = time.time()
                   previous_time = start_time
-                  # msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: 0.0s")
                   self.ui.timeLabel.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: 0.0s")
-                  # msg_box.setStandardButtons(qt.QMessageBox.NoButton)
-                  # msg_box.show()
                   name_env = "shapeaxi"
                   process = threading.Thread(target=self.conda_wsl.condaCreateEnv, args=(name_env,"3.9",["shapeaxi"],)) #run in paralle to not block slicer
                   process.start()
@@ -791,17 +789,10 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                         previous_time = current_time
                         elapsed_time = current_time - start_time
                         self.ui.timeLabel.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
-                        # msg_box.setText(f"Creation of the new environment. This task may take a few minutes.\ntime: {elapsed_time:.1f}s")
-                  # msg_box.close()
-                  
-                  # msg_box = qt.QMessageBox()
-                  # msg_box.setIcon(qt.QMessageBox.Information)
+              
                   start_time = time.time()
                   previous_time = start_time
                   self.ui.timeLabel.setText(f"Installation of librairies into the new environnement. This task may take a few minutes.\ntime: 0.0s")
-                  # msg_box.setText(f"Installation of librairies into the new environnement. This task may take a few minutes.\ntime: 0.0s")
-                  # msg_box.setStandardButtons(qt.QMessageBox.NoButton)
-                  # msg_box.show()
                   name_env = "shapeaxi"
                   file_path = os.path.realpath(__file__)
                   folder = os.path.dirname(file_path)
@@ -826,7 +817,7 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
                     ready = False
             print("on y croit peut etre ca va se lancer")
                     
-            if ready : # if everything is ready launch dentalmodelseg on the environnement ali_ios in wsl
+            if ready : # if everything is ready launch dentalmodelseg on the environnement shapeaxi in wsl
               model = self.model
               if self.model == "latest":
                 model = None
@@ -864,6 +855,25 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
               csv_file = os.path.join(folder_path,"list_file.csv")
               if os.path.exists(csv_file):
                 os.remove(csv_file)
+
+              # CLI IS NOT WORKING, EVERYTHING IS RUNNING IN THIS FILE (can't call CondaSetUp from cli)
+              # self.logic = CrownSegmentationLogic(input_vtk,
+              #                                 input_stl,
+              #                                 input_csv, 
+              #                                 self.ui.outputLineEdit.text,
+              #                                 self.ui.checkBoxOverwrite.checked, 
+              #                                 self.model, 
+              #                                 self.ui.sepOutputsCheckbox.isChecked(),
+              #                                 self.predictedId,
+              #                                 self.chooseFDI,
+              #                                 self.ui.outputFileLineEdit.text,
+              #                                 vtk_folder)
+
+
+              
+              # self.logic.process()
+              # self.addObserver(self.logic.cliNode,vtk.vtkCommand.ModifiedEvent,self.onProcessUpdate)
+              # self.onProcessStarted()
 
           
   def windows_to_linux_path(self,windows_path):
@@ -934,45 +944,42 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
 
       return 'Ubuntu' in clean_output
 
-  def onProcessStarted(self):    
-    self.currentPredDict["rotation"] = self.rotation
-    self.currentPredDict["PredictedID"] = self.predictedId
-    self.currentPredDict["output"] = self.output
+  def onProcessStarted(self):
+    self.start_time = time.time()
+    self.previous_time = self.start_time  
+    
+    self.ui.applyChangesButton.setEnabled(False)
     self.ui.doneLabel.setHidden(True)
-    self.ui.openOutSurfButton.setHidden(True)
-    self.ui.cancelButton.setHidden(False)
-    self.ui.cancelButton.setEnabled(True)
-    self.ui.resetButton.setEnabled(False)
-    if os.path.isdir(self.input):
-      self.nbFiles = len(glob.glob(f"{self.input}/*.vtk"))
-    else:
-      self.nbFiles = 1
-    self.ui.progressBar.setValue(0)
-    self.progress = 0
-    self.ui.progressBar.setEnabled(True)
-    self.ui.progressBar.setHidden(False)
-    self.ui.progressBar.setTextVisible(True)
+    self.ui.timeLabel.setHidden(False)
     self.ui.progressLabel.setHidden(False)
-
-    qt.QSettings().setValue("TeethSeg_ModelPath",self.model)
-    qt.QSettings().setValue("TeethSegVisited",1)
+    self.ui.timeLabel.setText(f"time : 0.00s") 
+     
 
 
 
   def onProcessUpdate(self,caller,event):
     # check log file
-    if os.path.isfile(self.log_path):
-      time = os.path.getmtime(self.log_path)
-      if time != self.time_log:
-        # if progress was made
-        self.time_log = time
-        self.progress += 1
-        progressbar_value = (self.progress -1) /self.nbFiles * 100
-        #print(f'progressbar value {progressbar_value}')
-        if progressbar_value < 100 :
-          self.ui.progressBar.setValue(progressbar_value)
-        else:
-          self.ui.progressBar.setValue(99)
+    current_time = time.time()
+    gap = current_time - self.previous_time
+    if gap > 0.3:
+        self.previous_time = current_time
+        elapsed_time = current_time - self.start_time
+        # Mettez à jour le label avec le temps écoulé
+        self.ui.timeLabel.setText(f"time : {elapsed_time:.2f}s")
+    
+    # if os.path.isfile(self.log_path):
+    #   time = os.path.getmtime(self.log_path)
+    #   if time != self.time_log:
+    #     # if progress was made
+    #     self.time_log = time
+    #     self.progress += 1
+    #     progressbar_value = (self.progress -1) /self.nbFiles * 100
+    #     #print(f'progressbar value {progressbar_value}')
+    #     if progressbar_value < 100 :
+    #       self.ui.progressBar.setValue(progressbar_value)
+    #     else:
+    #       self.ui.progressBar.setValue(99)
+
 
     if self.logic.cliNode.GetStatus() & self.logic.cliNode.Completed:
       # process complete
@@ -993,20 +1000,25 @@ class CrownSegmentationWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
         msg.setWindowTitle("Error")
         msg.exec_()
 
-      else:
-        # success
-        print('PROCESS DONE.')
-        file_path = os.path.abspath(__file__)
-        folder_path = os.path.dirname(file_path)
-        csv_file = os.path.join(folder_path,"list_file.csv")
-        if os.path.exists(csv_file):
-          os.remove(csv_file)
-        print(self.logic.cliNode.GetOutputText())
-        self.ui.doneLabel.setHidden(False)
-        if os.path.isdir(self.output):
-          self.ui.openOutFolderButton.setHidden(False)
-        elif os.path.isfile(self.output):
-          self.ui.openOutSurfButton.setHidden(False) 
+    else:
+      # success
+      print('PROCESS DONE.')
+
+      self.ui.progressLabel.setHidden(True)
+      self.ui.doneLabel.setHidden(False)
+      self.ui.applyChangesButton.setEnabled(True)
+      print("Process completed successfully.")
+
+      # Récupérer la sortie standard et l'erreur
+      # stdout = self.logic.cliNode.GetOutputText()
+      # stderr = self.logic.cliNode.GetErrorText()
+
+      # print("Output:\n", stdout)
+      # if stderr:
+      #     print("Errors:\n", stderr)
+        
+      print("*"*25,"Output cli","*"*25)
+      print(self.logic.cliNode.GetOutputText())
         
   def onReset(self):
     self.ui.outputLineEdit.setText("")
@@ -1043,9 +1055,22 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
   """
   Uses ScriptedLoadableModuleLogic base class, available at:
   https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
+      parser = argparse.ArgumentParser()
+    parser.add_argument('input_vtk',type=str)
+    parser.add_argument('input_stl',type=str)
+    parser.add_argument('input_csv',type = int)
+    parser.add_argument('out',type=int)
+    parser.add_argument('overwrite',type=str)
+    parser.add_argument('model',type=str)
+    parser.add_argument('crown_segmentation',type=int)
+    parser.add_argument('array_name',type=int)
+    parser.add_argument('fdi',type=str)
+    parser.add_argument('suffix',type=str)
+    parser.add_argument('vtk_folder',type=str)
+
   """
 
-  def __init__(self, input_vtk = None,input_stl = None, input_csv = None,output=None,model=None,predictedId=None,sepOutputs=None,chooseFDI=None,logPath=None,overwrite=False,suffix="None",vtk_folder="None"):
+  def __init__(self, input_vtk = "None",input_stl = "None", input_csv = "None",out="None",overwrite="None",model="None",crown_segmentation="None",array_name="None",fdi="None",suffix="False",vtk_folder="None"):
     """
     Called when the logic class is instantiated. Can be used for initializing member variables.
     """
@@ -1053,27 +1078,16 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
     self.input_vtk = input_vtk
     self.input_stl = input_stl
     self.input_csv = input_csv
-    self.output = output
-    self.model = model
-    self.predictedId = predictedId
-    self.sepOutputs = sepOutputs
-    self.chooseFDI = chooseFDI
-    self.logPath = logPath
-    self.nbOperation = 0
-    self.progress = 0
-    self.cliNode = None
-    self.installCliNode = None
+    self.out = out
     self.overwrite = overwrite
+    self.model = model
+    self.crown_segmentation = crown_segmentation
+    self.array_name = array_name
+    self.fdi = fdi
     self.suffix = suffix
     self.vtk_folder = vtk_folder
-    """
-    print(f"model: {self.model}")
-    print(f'input : {self.input}')
-    print(f'outptutfile : {self.output}')
-    print(f'resolution : {self.resolution}')
-    print(f'rotation : {self.rotation}')
-    print(f'predictedId : {self.predictedId}')
-    """
+  
+
 
 
 
@@ -1082,14 +1096,14 @@ class CrownSegmentationLogic(ScriptedLoadableModuleLogic):
     parameters ["input_vtk"] =self.input_vtk
     parameters ["input_stl"] =self.input_stl
     parameters ["input_csv"] =self.input_csv
-    parameters ["output"] = self.output
-    parameters ['model'] = self.model
-    parameters ['predictedId'] = self.predictedId
-    parameters ['sepOutputs'] = str(self.sepOutputs)
-    parameters ['chooseFDI'] = int(self.chooseFDI)
-    parameters ['logPath'] = self.logPath
+    parameters ["out"] = self.out
     parameters ['overwrite'] = str(self.overwrite)
-    parameters ['name_env'] = "shapeAxi"
+    parameters ['model'] = self.model
+    parameters ['crown_segmentation'] = str(self.crown_segmentation)
+    parameters ['array_name'] = str(self.array_name)
+    parameters ['fdi'] = str(self.fdi)
+    # parameters ['overwrite'] = str(self.overwrite)
+    # parameters ['name_env'] = "shapeAxi"
     parameters ['suffix'] = self.suffix
     parameters ['vtk_folder'] = self.vtk_folder
     print ('parameters : ', parameters)
